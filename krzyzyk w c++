@@ -1,0 +1,105 @@
+#include <iostream>
+#include <vector>
+
+class TicTacToe {
+private:
+    std::vector<std::vector<char>> board;
+    char currentPlayer;
+
+public:
+    TicTacToe() : board(3, std::vector<char>(3, ' ')), currentPlayer('X') {}
+
+    void printBoard() {
+        std::cout << "  0 1 2\n";
+        for (int i = 0; i < 3; i++) {
+            std::cout << i << " ";
+            for (int j = 0; j < 3; j++) {
+                std::cout << board[i][j];
+                if (j < 2) {
+                    std::cout << "|";
+                }
+            }
+            std::cout << "\n";
+            if (i < 2) {
+                std::cout << "  -+-+-\n";
+            }
+        }
+        std::cout << "\n";
+    }
+
+    bool makeMove(int row, int col) {
+        if (row < 0 || row > 2 || col < 0 || col > 2 || board[row][col] != ' ') {
+            std::cout << "Nieprawidłowy ruch. Spróbuj ponownie.\n";
+            return false;
+        }
+        board[row][col] = currentPlayer;
+        return true;
+    }
+
+    bool checkWin() {
+        // Sprawdzanie poziomych, pionowych i przekątnych linii
+        for (int i = 0; i < 3; i++) {
+            if (board[i][0] == currentPlayer && board[i][1] == currentPlayer && board[i][2] == currentPlayer) {
+                return true; // Wygrana w poziomie
+            }
+            if (board[0][i] == currentPlayer && board[1][i] == currentPlayer && board[2][i] == currentPlayer) {
+                return true; // Wygrana w pionie
+            }
+        }
+        if (board[0][0] == currentPlayer && board[1][1] == currentPlayer && board[2][2] == currentPlayer) {
+            return true; // Wygrana na przekątnej (od lewej górnego rogu do prawego dolnego)
+        }
+        if (board[0][2] == currentPlayer && board[1][1] == currentPlayer && board[2][0] == currentPlayer) {
+            return true; // Wygrana na przekątnej (od prawego górnego rogu do lewego dolnego)
+        }
+        return false;
+    }
+
+    bool checkDraw() {
+        for (int i = 0; i < 3; i++) {
+            for (int j = 0; j < 3; j++) {
+                if (board[i][j] == ' ') {
+                    return false; // Gra trwa
+                }
+            }
+        }
+        return true; // Remis
+    }
+
+    void switchPlayer() {
+        if (currentPlayer == 'X') {
+            currentPlayer = 'O';
+        } else {
+            currentPlayer = 'X';
+        }
+    }
+};
+
+int main() {
+    TicTacToe game;
+
+    std::cout << "Witaj w grze w kółko i krzyżyk!\n";
+
+    while (true) {
+        game.printBoard();
+        std::cout << "Gracz " << game.getCurrentPlayer() << ", podaj wiersz (0-2) i kolumnę (0-2): ";
+        int row, col;
+        std::cin >> row >> col;
+
+        if (game.makeMove(row, col)) {
+            if (game.checkWin()) {
+                game.printBoard();
+                std::cout << "Gracz " << game.getCurrentPlayer() << " wygrywa!\n";
+                break;
+            } else if (game.checkDraw()) {
+                game.printBoard();
+                std::cout << "Remis!\n";
+                break;
+            }
+
+            game.switchPlayer();
+        }
+    }
+
+    return 0;
+}
