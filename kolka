@@ -1,0 +1,110 @@
+#include <stdio.h>
+
+// Funkcja do inicjalizacji planszy
+void inicjalizuj_plansze(char plansza[3][3]) {
+    for (int i = 0; i < 3; i++) {
+        for (int j = 0; j < 3; j++) {
+            plansza[i][j] = ' ';
+        }
+    }
+}
+
+// Funkcja do rysowania planszy
+void rysuj_plansze(char plansza[3][3]) {
+    printf("\n");
+    for (int i = 0; i < 3; i++) {
+        for (int j = 0; j < 3; j++) {
+            printf(" %c ", plansza[i][j]);
+            if (j < 2) {
+                printf("|");
+            }
+        }
+        printf("\n");
+        if (i < 2) {
+            printf("---+---+---\n");
+        }
+    }
+    printf("\n");
+}
+
+// Funkcja do sprawdzania, czy gra się skończyła
+int gra_sie_skonczyla(char plansza[3][3]) {
+    // Sprawdzanie poziomych linii
+    for (int i = 0; i < 3; i++) {
+        if (plansza[i][0] == plansza[i][1] && plansza[i][1] == plansza[i][2] && plansza[i][0] != ' ') {
+            return 1;
+        }
+    }
+    
+    // Sprawdzanie pionowych linii
+    for (int j = 0; j < 3; j++) {
+        if (plansza[0][j] == plansza[1][j] && plansza[1][j] == plansza[2][j] && plansza[0][j] != ' ') {
+            return 1;
+        }
+    }
+    
+    // Sprawdzanie przekątnych
+    if ((plansza[0][0] == plansza[1][1] && plansza[1][1] == plansza[2][2] && plansza[0][0] != ' ') ||
+        (plansza[0][2] == plansza[1][1] && plansza[1][1] == plansza[2][0] && plansza[0][2] != ' ')) {
+        return 1;
+    }
+    
+    // Sprawdzanie remisu
+    for (int i = 0; i < 3; i++) {
+        for (int j = 0; j < 3; j++) {
+            if (plansza[i][j] == ' ') {
+                return 0; // Gra trwa
+            }
+        }
+    }
+    
+    return -1; // Remis
+}
+
+int main() {
+    char plansza[3][3];
+    int ruch = 0; // Licznik ruchów
+    char gracz = 'X'; // Aktualny gracz (pierwszy ruch to X)
+
+    inicjalizuj_plansze(plansza);
+    
+    while (1) {
+        rysuj_plansze(plansza);
+        
+        int wiersz, kolumna;
+        printf("Gracz %c, podaj wiersz (0-2) i kolumnę (0-2): ", gracz);
+        scanf("%d %d", &wiersz, &kolumna);
+
+        // Sprawdź poprawność ruchu
+        if (wiersz < 0 || wiersz > 2 || kolumna < 0 || kolumna > 2 || plansza[wiersz][kolumna] != ' ') {
+            printf("Nieprawidłowy ruch. Spróbuj ponownie.\n");
+            continue;
+        }
+
+        // Zapisz ruch na planszy
+        plansza[wiersz][kolumna] = gracz;
+        
+        // Sprawdź, czy gra się skończyła
+        int stan_gry = gra_sie_skonczyla(plansza);
+        if (stan_gry == 1) {
+            rysuj_plansze(plansza);
+            printf("Gracz %c wygrywa!\n", gracz);
+            break;
+        } else if (stan_gry == -1) {
+            rysuj_plansze(plansza);
+            printf("Remis!\n");
+            break;
+        }
+
+        // Przełącz graczów
+        if (gracz == 'X') {
+            gracz = 'O';
+        } else {
+            gracz = 'X';
+        }
+        
+        ruch++;
+    }
+
+    return 0;
+}
